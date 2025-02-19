@@ -444,7 +444,6 @@ return view.extend({
         o.value('text', _('Text List (comma/space/newline separated)'));
         o.default = 'disabled';
         o.rmempty = false;
-        o.ucisection = 'main';
 
         o = s.taboption('basic', form.DynamicList, 'custom_subnets', _('User Subnets'), _('Enter subnets in CIDR notation (example: 103.21.244.0/22) or single IP addresses'));
         o.placeholder = 'IP or subnet';
@@ -1577,6 +1576,54 @@ return view.extend({
         // o = s.taboption('basic', form.Flag, 'socks5', _('Mixed enable'), _('Browser port: 2080 (extra +1)'));
         // o.default = '0';
         // o.rmempty = false;
+
+        o = s.taboption('advanced', form.ListValue, 'dns_type', _('DNS Protocol'), _('Select DNS protocol type'));
+        o.value('udp', _('UDP (Standard DNS)'));
+        o.value('dot', _('DoT (DNS over TLS)'));
+        o.value('doh', _('DoH (DNS over HTTPS)'));
+        o.default = 'udp';
+        o.rmempty = false;
+
+        o = s.taboption('advanced', form.ListValue, 'dns_server', _('DNS Server'), _('Select or enter DNS server'));
+        // Предустановленные серверы
+        o.value('1.1.1.1', _('Cloudflare (1.1.1.1)'));
+        o.value('8.8.8.8', _('Google (8.8.8.8)'));
+        o.value('9.9.9.9', _('Quad9 (9.9.9.9)'));
+        o.value('208.67.222.222', _('OpenDNS (208.67.222.222)'));
+        // Домены для DoH/DoT
+        o.value('one.one.one.one', _('Cloudflare (one.one.one.one)'));
+        o.value('dns.google', _('Google (dns.google)'));
+        o.value('dns.quad9.net', _('Quad9 (dns.quad9.net)'));
+        o.default = '1.1.1.1';
+        o.rmempty = false;
+
+        // Валидация введенного значения
+        o.validate = function(section_id, value) {
+            if (!value || value.length === 0) {
+                return _('DNS server cannot be empty');
+            }
+
+            // Проверка IP адреса
+            const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+            // Проверка домена
+            const domainRegex = /^(?!-)[A-Za-z0-9-]+([-.][A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+
+            if (!ipRegex.test(value) && !domainRegex.test(value)) {
+                return _('Invalid DNS server format. Enter IP address or domain name');
+            }
+
+            if (ipRegex.test(value)) {
+                const parts = value.split('.');
+                for (const part of parts) {
+                    const num = parseInt(part);
+                    if (num < 0 || num > 255) {
+                        return _('IP address parts must be between 0 and 255');
+                    }
+                }
+            }
+
+            return true;
+        };
 
         let map_promise = m.render();
 

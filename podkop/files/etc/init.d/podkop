@@ -623,26 +623,55 @@ sing_box_inbound_proxy() {
 
 sing_box_dns() {
     log "Configure DNS in sing-box"
+    
+    config_get dns_type "main" "dns_type"
+    config_get dns_server "main" "dns_server"
+    
+    local dns_address=""
+    local resolver_block=""
+    
+    case "$dns_type" in
+        "doh")
+            dns_address="https://${dns_server}/dns-query"
+            # Если это домен, а не IP, добавляем resolver
+            if ! echo "$dns_server" | grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+                resolver_block='"address_resolver": "google",'
+            fi
+            ;;
+        "dot")
+            dns_address="tls://${dns_server}"
+            if ! echo "$dns_server" | grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+                resolver_block='"address_resolver": "google",'
+            fi
+            ;;
+        "udp"|*)
+            dns_address="${dns_server}"
+            ;;
+    esac
+
     jq \
     --arg FAKEIP "$FAKEIP" \
-    '.dns = {
-        "strategy": "ipv4_only",
-        "fakeip": {
-            "enabled": true,
-            "inet4_range": $FAKEIP
-        },
-        "servers": [
-            {
-                "tag": "cloudflare-doh-server",
-                "address": "https://1.1.1.1/dns-query",
-                "detour": "direct-out"
+    --arg dns_address "$dns_address" \
+    --arg resolver_block "$resolver_block" \
+    '{
+        "dns": {
+            "strategy": "ipv4_only",
+            "fakeip": {
+                "enabled": true,
+                "inet4_range": $FAKEIP
             },
-            {
-                "tag": "fakeip-server",
-                "address": "fakeip"
-            }
-        ]
-    }' $SING_BOX_CONFIG >/tmp/sing-box-config-tmp.json && mv /tmp/sing-box-config-tmp.json $SING_BOX_CONFIG
+            "servers": [
+                {
+                    "address": $dns_address,
+                    ($resolver_block)
+                },
+                {
+                    "tag": "fakeip-server",
+                    "address": "fakeip"
+                }
+            ]
+        }
+    }' "$SING_BOX_CONFIG" > /tmp/sing-box-config-tmp.json && mv /tmp/sing-box-config-tmp.json "$SING_BOX_CONFIG"
 }
 
 sing_box_dns_rule_fakeip() {

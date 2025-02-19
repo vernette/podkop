@@ -855,3 +855,30 @@ msgstr ""
 
 msgid "Check failed"
 msgstr ""
+
+msgid "DNS Protocol"
+msgstr ""
+
+msgid "Select DNS protocol type"
+msgstr ""
+
+msgid "UDP (Standard DNS)"
+msgstr ""
+
+msgid "DoT (DNS over TLS)"
+msgstr ""
+
+msgid "DoH (DNS over HTTPS)"
+msgstr ""
+
+msgid "DNS Server"
+msgstr ""
+
+msgid "Select or enter DNS server"
+msgstr ""
+
+msgid "DNS server cannot be empty"
+msgstr ""
+
+msgid "Invalid DNS server format. Enter IP address or domain name"
+msgstr ""
