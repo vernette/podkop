@@ -495,3 +495,30 @@ msgstr "Обновить списки"
 
 msgid "Lists Update Results"
 msgstr "Результаты обновления списков"
+
+msgid "DNS Protocol"
+msgstr "Протокол DNS"
+
+msgid "Select DNS protocol type"
+msgstr "Выберите тип протокола DNS"
+
+msgid "UDP (Standard DNS)"
+msgstr "UDP (Стандартный DNS)"
+
+msgid "DoT (DNS over TLS)"
+msgstr "DoT (DNS через TLS)"
+
+msgid "DoH (DNS over HTTPS)"
+msgstr "DoH (DNS через HTTPS)"
+
+msgid "DNS Server"
+msgstr "DNS сервер"
+
+msgid "Select or enter DNS server"
+msgstr "Выберите или введите DNS сервер"
+
+msgid "DNS server cannot be empty"
+msgstr "DNS сервер не может быть пустым"
+
+msgid "Invalid DNS server format. Enter IP address or domain name"
+msgstr "Неверный формат DNS сервера. Введите IP-адрес или доменное имя"
